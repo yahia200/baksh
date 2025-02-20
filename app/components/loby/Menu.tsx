@@ -8,7 +8,6 @@ import { FiLoader } from 'react-icons/fi'
 function Menu({ loby }: { loby: ILoby }) {
   const [name, setName] = useState<string | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
-  const [startLoading, setStartLoading] = useState(false);
 
   useEffect(() => {
     const storedName = localStorage.getItem('name');
