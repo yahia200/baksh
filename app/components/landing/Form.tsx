@@ -1,8 +1,8 @@
 "use client"
 import React, { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { createLoby } from '@/server/game'
 import { FiLoader } from 'react-icons/fi'
+import { createGame as cg} from '@/server/game'
 
 
 function Form() {
@@ -11,9 +11,16 @@ function Form() {
     const createGame = async () => {
         setLoading(true)
         const name = (document.getElementById('name') as HTMLInputElement).value
-        if (!name) return
-        const loby = await createLoby(name)
-        console.log(loby)
+        if (!name) {
+            setLoading(false)
+            return
+        }
+        localStorage.setItem('name', name);
+        const res = await cg(name);
+        if (res.success)
+            window.location.href = `/wait/${res.code}`
+        else
+        console.error(res)
         setLoading(false)
       }
 
