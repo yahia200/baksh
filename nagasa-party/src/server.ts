@@ -1,6 +1,6 @@
 import type * as Party from "partykit/server";
 import type { Game } from '../../types/index';
-import { Codes } from '../../types/index';
+import { Codes, GameStates } from '../../types/index';
 
 export default class Server implements Party.Server {
   constructor(readonly party: Party.Room) {}
@@ -28,13 +28,19 @@ export default class Server implements Party.Server {
         });
       }
       this.game = game;
+      this.game.players = [game.host];
+      console.log("created game:", this.game);
       return new Response(JSON.stringify({ success: true, ...this.game }), {
         headers: this.getCORSHeaders(),
       });
     }
 
     if (req.method === 'GET') {
-      return new Response(JSON.stringify(this.game || { success: false, message: "No game found" }), {
+      if (!this.game) 
+        return new Response(JSON.stringify({ success: false, code: Codes.GAME_NOT_FOUND }), {
+          headers: this.getCORSHeaders(),
+        });
+      return new Response(JSON.stringify({...this.game, success: true}), {
         headers: this.getCORSHeaders(),
       });
     }
@@ -49,6 +55,7 @@ export default class Server implements Party.Server {
     return new Response(JSON.stringify({ success: false, message: "Invalid request" }), {
       headers: this.getCORSHeaders(),
     });
+
   }
 
   // Helper function to return CORS headers
@@ -60,4 +67,68 @@ export default class Server implements Party.Server {
       "Access-Control-Allow-Credentials": "true",
     };
   }
+
+  private disconnectPlayer(id: string) {
+    console.log('disconnected');
+    if (!this.game) return;
+      if(this.game.players.length <= 1)
+        { this.game = undefined;
+          return
+        }
+      this.game.players = this.game.players.filter(player => player.id !== id);
+      if (this.game?.host.id === id) {
+        this.game.host = this.game.players[0];
+      }
+    this.party.broadcast(JSON.stringify(this.game));
+  }
+
+  async onConnect(connection: Party.Connection, ctx: Party.ConnectionContext): Promise<void> {
+    //console.log(connection);
+  }
+
+  async onDisconnect(connection: Party.Connection, ctx: Party.ConnectionContext): Promise<void> {
+    this.disconnectPlayer(connection.id);
+  }
+
+  async onMessage(message: string): Promise<void> {
+    if (!this.game) return;
+    const data = JSON.parse(message);
+    console.log(data);
+    if (data.type === 'join'){
+      if(this.game.players.find(player => player.name === data.name)){
+        if (this.game.host.name === data.name) {
+          this.game.host.id = data.id;
+        }
+        this.game.players = this.game.players.map(player => {
+          if (player.name === data.name) {
+            player.id = data.id;
+          }
+          return player;
+        });
+      }
+      else
+      this.game.players.push({name:data.name, id: data.id});
+    }
+
+    if(data.type === 'delete') 
+      this.game = undefined;
+
+
+
+    if(data.type === 'disconnect') {
+      this.disconnectPlayer(data.id);
+    }
+
+    if(data.type === 'start') {
+      if (!this.game) return;
+      if (this.game.host.id !== data.id) return;
+      this.game.state = GameStates.STARTED;
+    }
+
+    
+    console.log(this.game);
+    this.party.broadcast(JSON.stringify(this.game));
+  }
+
+
 }

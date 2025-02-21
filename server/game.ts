@@ -1,13 +1,13 @@
-import { Game, Codes } from '@/types/index'
+import { Game, Codes, GameStates } from '@/types/index'
 
 export const createGame = async (host: string) => {
     console.log(process.env.NEXT_PUBLIC_PARTY_URL)
     const code = Math.random().toString(36).substring(2, 6).toUpperCase()
     const game: Game = {
-        players: [host],
-        host: host,
+        players: [{name:host, id:""}],
+        host: {name:host, id:""},
         code: code,
-        started: false
+        state: GameStates.LOBBY
     }
     const req = await fetch(`${process.env.NEXT_PUBLIC_PARTY_URL}/party/${code}`, {
         method: 'POST',
@@ -23,5 +23,13 @@ export const createGame = async (host: string) => {
             return "game exists"
         }
     }
+    return res;
+}
+
+export const getGame = async (code: string) => {
+    const req = await fetch(`${process.env.NEXT_PUBLIC_PARTY_URL}/party/${code}`, {
+        method: 'GET'
+    })
+    const res = await req.json()
     return res;
 }
