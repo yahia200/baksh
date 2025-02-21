@@ -5,7 +5,7 @@ import Menu from '@/app/components/loby/Menu';
 async function Page({params,} : { params: Promise<{ code: string }>;})
 {
   const code = (await params).code;
-  const loby = await fetch(`http://localhost:1999/party/${code}`).then(res => res.json());
+  const loby = await fetch(`${process.env.NEXT_PUBLIC_PARTY_URL}/party/${code}`).then(res => res.json());
 
   console.log(code)
   return (
