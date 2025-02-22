@@ -12,7 +12,6 @@ function Operation({g, name, socket} : { g : Game, name : string, socket : Party
     }, [g]);
 
     const render = () => {
-        console.log("heeeeeeh",game?.state);
         if(game?.state === GameStates.EATRAF) {
             console.log("beeb",game?.operations.find(op => op.name === 'E3trf')?.player);
             const player = game?.operations.find(op => op.name === 'E3trf')?.player || "";
@@ -22,7 +21,8 @@ function Operation({g, name, socket} : { g : Game, name : string, socket : Party
                 </h1>
             )
         }
-        else
+        else{
+            console.log("beeb",game);
         return(
         <h1>{
             game?.operations.filter(op => op.player === name && !op.done).map(op => (
@@ -49,12 +49,13 @@ function Operation({g, name, socket} : { g : Game, name : string, socket : Party
           }</h1>
         ) 
     }
+    }
 
   return (
     <div>
         {render()}
       <div className='mx-auto w-fit mt-6'>
-        {!(game?.currentPlayer === game?.operations.find(op => op.name = "E3trf")?.player) &&
+        {(game?.currentPlayer.toString() !== game?.operations.find(op => op.name = "E3trf")?.player?.toString()) &&
       <Button onClick={() => socket.send(JSON.stringify({type: 'endTurn', name}))}>End Turn</Button>
         }
       </div>

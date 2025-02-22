@@ -6,6 +6,7 @@ import { Game, GameStates } from '@/types'
 import Operation from './Operation';
 import Wait from './Wait';
 import { Button } from '@/components/ui/button';
+import { checkGame } from '@/lib/utils';
 
 
 function Container({code} : {code: string}) {
@@ -22,7 +23,8 @@ function Container({code} : {code: string}) {
         }
         const data = JSON.parse(msg.data) as Game;
         if (data) {
-          setGame(data);
+          const game = checkGame(data);
+          setGame(game);
         }
       },
     });
@@ -56,10 +58,12 @@ function Container({code} : {code: string}) {
             return <Menu game={game} name={name || ""} endGame={handleEndGame} socket={socket} />
         else if (game.state === GameStates.INFO)
             return <Info />
-        else if (game.state === GameStates.STARTED || game.state === GameStates.EATRAF)
+        else if (game.state === GameStates.STARTED || game.state === GameStates.EATRAF){
+          console.log("heeeeeeh",game);
             return (<div>
               {game.currentPlayer === name ? <Operation g={game} name={name} socket={socket}/> : <Wait g={game}/>}
             </div>)
+        }
           
     }
 

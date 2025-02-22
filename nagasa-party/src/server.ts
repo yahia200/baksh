@@ -280,18 +280,18 @@ export default class Server implements Party.Server {
           }
 
 
-      case 'Zmail':
-        const zam = Math.random() > 0.75 ? '3ameel' : 'zemeel';
-            if (zam === '3ameel') {
+      case 'Shoraka':
+        const shereek = Math.random() > 0.75 ? '3ameel' : 'zemeel';
+            if (shereek === '3ameel') {
               const ameel1 = this.game?.omala[Math.floor(Math.random() * this.game?.omala.length)];
               const filter = this.game?.omala.filter(p => p !== ameel1) || [];
-              return [`${ameel1} zai ${filter[Math.floor(Math.random() * filter.length)]}`];
+              return [`${ameel1} w ${filter[Math.floor(Math.random() * filter.length)]} shoraka`];
             }
             
             const zemeel1 = this.game?.zomala[Math.floor(Math.random() * this.game?.zomala.length)];
             console.log("zmeel",zemeel1, this.game?.zomala);
             const filter = this.game?.zomala.filter(p => p !== zemeel1) || [];
-            return [`${zemeel1} zai ${filter[Math.floor(Math.random() * filter.length)]}`];
+            return [`${zemeel1} w ${filter[Math.floor(Math.random() * filter.length)]} shoraka`];
             
 
       case 'E3trf':

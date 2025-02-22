@@ -46,9 +46,9 @@ export const maalooma: Operation = {
     options: ['* 3ameel', '* zemeel', '* zai *', '* mesh zai *']
 };
 
-export const zmail: Operation = {
-    name: 'Zmail',
-    description: 'El 2 dol ya2ma zomal aw 3omala',
+export const shoraka: Operation = {
+    name: 'Shoraka',
+    description: 'El 2 dol shoraka',
     options: ['* w *']
 };
 
@@ -58,4 +58,4 @@ export const eatrf: Operation = {
     options: ['*']
 };
 
-export const operations = [sabooba, maalooma, zmail, eatrf];
+export const operations = [sabooba, maalooma, shoraka, eatrf];
