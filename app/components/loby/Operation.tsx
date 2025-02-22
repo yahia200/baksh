@@ -54,7 +54,7 @@ function Operation({g, name, socket} : { g : Game, name : string, socket : Party
     <div>
         {render()}
       <div className='mx-auto w-fit mt-6'>
-        {(game?.operations.filter(op => op.player === name && !op.done && op.name !== "E3trf").length || 0) > 0 &&
+        {!(game?.currentPlayer === game?.operations.find(op => op.name = "E3trf")?.player) &&
       <Button onClick={() => socket.send(JSON.stringify({type: 'endTurn', name}))}>End Turn</Button>
         }
       </div>

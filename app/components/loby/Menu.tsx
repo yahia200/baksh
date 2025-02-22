@@ -21,9 +21,9 @@ function Menu({ game, name, socket, endGame }: { game?: Game, name?: string, end
     <div className='w-11/12 flex flex-col items-center mx-auto space-y-4'>
       <div className='w-11/12 mx-auto my-4 bg-foreground p-4 rounded-lg'>
           <h2 className='text-2xl w-fit mx-auto'>Players</h2>
-          <ul className='w-fit mx-auto my-4 grid lg:grid-cols-7 xs:grid-cols-4 gap-2'>
+          <ul className='w-fit mx-auto my-4 grid lg:grid-cols-6 xs:grid-cols-3 gap-2'>
             {game?.players.map((player : {name:string, id:string}) => (
-              <li key={player.id} className='text-xl font-normal bg-background px-4 py-2 w-fit rounded-lg'>
+              <li key={player.id} className='text-md font-normal bg-background px-4 py-2 w-fit rounded-lg'>
                 <span>{player.name}</span>
               </li>
             ))}
