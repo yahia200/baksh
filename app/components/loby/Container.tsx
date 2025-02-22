@@ -3,6 +3,9 @@ import React, { useState, useEffect } from 'react'
 import Menu from '@/app/components/loby/Menu';
 import usePartySocket from 'partysocket/react'
 import { Game, GameStates } from '@/types'
+import Operation from './Operation';
+import Wait from './Wait';
+import { Button } from '@/components/ui/button';
 
 
 function Container({code} : {code: string}) {
@@ -38,29 +41,26 @@ function Container({code} : {code: string}) {
         socket.send(JSON.stringify({type: 'delete', id: socket.id}));  
       };
 
+      const Info = () => {
+        return (
+          <div className='mx-auto w-fit text-center mt-6'>
+            <h1 className='w-fit mb-2'>Enta {game?.omala.includes(name) ? "3ameel" : "zemeel"}</h1>
+            <Button disabled={game?.players.find(p => p.name === name)?.ready} onClick={() => socket.send(JSON.stringify({type: 'ready', id: socket.id}))}>{ game?.players.find(p => p.name === name)?.ready ? "Estana" : "Eshta"}</Button>
+          </div>
+        )
+      }
+
 
     const render = () => {
         if (!game || game.state === GameStates.LOBBY)
             return <Menu game={game} name={name || ""} endGame={handleEndGame} socket={socket} />
-        if (game.state === GameStates.STARTED)
+        else if (game.state === GameStates.INFO)
+            return <Info />
+        else if (game.state === GameStates.STARTED || game.state === GameStates.EATRAF)
             return (<div>
-              {game.currentPlayer === name ? <><h1>{
-                game.operations.filter(op => op.player === name && !op.done).map(op => (
-                    <div key={op.name}>
-                        <h2>{op.name}</h2>
-                        <p>{op.description}</p>
-                        <ul>
-                            {op.options.map(option => (
-                                <li key={option}>{option}</li>
-                            ))}
-                        </ul>
-                    </div>
-                ))
-              }</h1> 
-              <button onClick={() => socket.send(JSON.stringify({type: 'endTurn', name}))}>End Turn</button>
-              </>:
-              <h1>Waiting for {game.currentPlayer} to finish</h1>}
+              {game.currentPlayer === name ? <Operation g={game} name={name} socket={socket}/> : <Wait g={game}/>}
             </div>)
+          
     }
 
   return (

@@ -37,9 +37,9 @@ function Menu({ game, name, socket, endGame }: { game?: Game, name?: string, end
           {
             Array.from({length: 5}, (_, i) => (
               <Button
-                className={`${i+1 < 0.5*(game?.players.length || 0) ? `w-[5ch] ${game?.omalaCount === i+1 ? 'bg-primary-hover' : 'bg-foreground'}` : "bg-foreground opacity-30 w-[5ch] pointer-events-none"} ${name !== game?.host.name && 'pointer-events-none'}`}
-               key={i} 
-               onClick={() => socket.send(JSON.stringify({type: 'setOmala', omalaCount: i+1, id: socket.id}))}>{i+1}</Button>
+                className={`${i+2 < 0.5*(game?.players.length || 0) ? `w-[5ch] ${game?.omalaCount === i+2 ? 'bg-primary-hover' : 'bg-foreground'}` : "bg-foreground opacity-30 w-[5ch] pointer-events-none"} ${name !== game?.host.name && 'pointer-events-none'}`}
+               key={i+2} 
+               onClick={() => socket.send(JSON.stringify({type: 'setOmala', omalaCount: i+2, id: socket.id}))}>{i+2}</Button>
             ))
           }
           </div>

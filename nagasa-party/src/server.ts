@@ -142,11 +142,11 @@ export default class Server implements Party.Server {
       this.unreadyPlayers();
       const zomala = this.game.players.map(player => player.name).filter(player => !omala.includes(player));
       this.game.zomala = zomala;
-      let ops = operations;
+      let ops = [...operations];
       for (const player of this.game.players) {
         if (ops.length > 0) {
           const op = ops.splice(Math.floor(Math.random() * ops.length), 1)[0];
-          console.log("ahhhhhh", op.name);
+          console.log("ahhhhhh",ops.length, op.name);
         this.game.operations.push({...op, 
           options: this.getOptions(op, player.name),
           player: player.name, done: false});
@@ -162,7 +162,7 @@ export default class Server implements Party.Server {
         }
       }
       this.game.currentPlayer = this.game.players[Math.floor(Math.random() * this.game.players.length)].name;
-      this.game.state = GameStates.STARTED;
+      this.game.state = GameStates.INFO;
     }
 
     if(data.type === 'setOmala') {
@@ -176,7 +176,13 @@ export default class Server implements Party.Server {
       const player = this.game.players.find(player => player.id === data.id);
       if (!player) return;
       player.ready = true;
+      const allReady = this.game.players.every(player => player.ready);
+      if (allReady) {
+        if (this.game.state === GameStates.INFO) {
+          this.game.state = GameStates.STARTED;
+        }
     }
+  }
 
     if(data.type === 'unready') {
       if (!this.game) return;
@@ -188,21 +194,38 @@ export default class Server implements Party.Server {
     if(data.type === 'endTurn') {
       if (!this.game) return;
       if (this.game.currentPlayer !== data.name) return;
+
+      if (this.game.state !== GameStates.EATRAF){
       this.game.operations = this.game.operations.map(op => {
         if (op.player === data.name) {
           op.done = true;
         }
         return op;
       });
+    }
+    else
+      this.game.state = GameStates.STARTED;
+
       const remainingPlayers = this.game.operations.filter(op => !op.done).map(op => op.player);
       if (remainingPlayers.length === 0) {
-        this.game.state = GameStates.ENDED;
+        this.game.state = GameStates.LOBBY;
       }
       else {
         this.game.currentPlayer = remainingPlayers[Math.floor(Math.random() * remainingPlayers.length)] || "";
       }
     }
 
+    if (data.type === 'e3trf') {
+      if (!this.game) return;
+      const op = this.game.operations.find(op => op.player === data.name && op.name === 'E3trf');
+      if (!op) return;
+      op.done = true;
+      const player = this.game.players.find(player => player.name === data.target);
+      if (!player) return;
+      this.game.state = GameStates.EATRAF;
+      this.game.currentPlayer = player.name;
+      console.log("etraaaaf",this.game);
+    }
 
 
     
@@ -243,7 +266,7 @@ export default class Server implements Party.Server {
           case '* zemeel':
             return [`${this.game?.zomala.filter(p => p !== player)[Math.floor(Math.random() * this.game?.zomala.length)]} zemeel`];
           case '* zai *':
-            const za = Math.random() > 0.5 ? '3ameel' : 'zemeel';
+            const za = Math.random() > 0.75 ? '3ameel' : 'zemeel';
             if (za === '3ameel') {
               const ameel1 = this.game?.omala[Math.floor(Math.random() * this.game?.omala.length)];
               const filter = this.game?.omala.filter(p => p !== ameel1) || [];
@@ -258,7 +281,7 @@ export default class Server implements Party.Server {
 
 
       case 'Zmail':
-        const zam = Math.random() > 0.5 ? '3ameel' : 'zemeel';
+        const zam = Math.random() > 0.75 ? '3ameel' : 'zemeel';
             if (zam === '3ameel') {
               const ameel1 = this.game?.omala[Math.floor(Math.random() * this.game?.omala.length)];
               const filter = this.game?.omala.filter(p => p !== ameel1) || [];

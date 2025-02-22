@@ -21,7 +21,9 @@ export enum Codes {
 export enum GameStates {
     LOBBY = 'LOBBY',
     STARTED = 'STARTED',
-    ENDED = 'ENDED'
+    ENDED = 'ENDED',
+    EATRAF = 'EATRAF',
+    INFO = 'INFO'
 }
 
 export type Operation = {
