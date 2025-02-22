@@ -3,12 +3,13 @@ import React, { useState, useEffect } from 'react'
 import { Game, GameStates } from '@/types'
 import PartySocket from "partysocket";
 import { Button } from '@/components/ui/button'
+import { checkGame } from '@/lib/utils';
 
 function Operation({g, name, socket} : { g : Game, name : string, socket : PartySocket }) {
     const [game, setGame] = useState<Game>();
 
     useEffect(() => {
-        setGame(g);
+        setGame(checkGame(g));
     }, [g]);
 
     const render = () => {

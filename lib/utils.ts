@@ -8,17 +8,16 @@ export function cn(...inputs: ClassValue[]) {
 
 
 export const checkGame = (game: Game) => {
-  const ops = game.operations;
-  for (let i = 0; i < ops.length; i++) {
-    const split = ops[i].description.split(' ');
+  for (let i = 0; i < game.operations.length; i++) {
+    const split = game.operations[i].description.split(' ');
     if (split.includes('sabooba'))
-      ops[i].name = 'Sabooba';
+      game.operations[i].name = 'Sabooba';
     else if (split.includes('maalooma'))
-      ops[i].name = 'Maalooma';
+      game.operations[i].name = 'Maalooma';
     else if (split.includes('shoraka'))
-      ops[i].name = 'Shoraka';
+      game.operations[i].name = 'Shoraka';
     else if (split.includes('t3trflo'))
-      ops[i].name = 'E3trf';
+      game.operations[i].name = 'E3trf';
   }
-  return {...game, operations: ops};
+  return game;
 }
