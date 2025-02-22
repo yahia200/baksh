@@ -1,6 +1,7 @@
 import type * as Party from "partykit/server";
 import type { Game } from '../../types/index';
-import { Codes, GameStates } from '../../types/index';
+import type { Operation } from "../../types/index";
+import { Codes, GameStates, operations, maalooma } from '../../types/index';
 
 export default class Server implements Party.Server {
   constructor(readonly party: Party.Room) {}
@@ -82,6 +83,14 @@ export default class Server implements Party.Server {
     this.party.broadcast(JSON.stringify(this.game));
   }
 
+  private unreadyPlayers() {
+    if (!this.game) return;
+    this.game.players = this.game.players.map(player => {
+      player.ready = false;
+      return player;
+    });
+  }
+
   async onConnect(connection: Party.Connection, ctx: Party.ConnectionContext): Promise<void> {
     //console.log(connection);
   }
@@ -122,13 +131,197 @@ export default class Server implements Party.Server {
     if(data.type === 'start') {
       if (!this.game) return;
       if (this.game.host.id !== data.id) return;
+      let omala : string[] = [];
+      while (omala.length < this.game.omalaCount) {
+        const player = this.game.players[Math.floor(Math.random() * this.game.players.length)];
+        if (!omala.includes(player.name)) {
+          omala.push(player.name);
+        }
+      }
+      this.game.omala = omala;
+      this.unreadyPlayers();
+      const zomala = this.game.players.map(player => player.name).filter(player => !omala.includes(player));
+      this.game.zomala = zomala;
+      let ops = operations;
+      for (const player of this.game.players) {
+        if (ops.length > 0) {
+          const op = ops.splice(Math.floor(Math.random() * ops.length), 1)[0];
+          console.log("ahhhhhh", op.name);
+        this.game.operations.push({...op, 
+          options: this.getOptions(op, player.name),
+          player: player.name, done: false});
+        if (op.name === 'Sabooba') {
+          this.game.sabooba = {option: this.game.operations[this.game.operations.length - 1].options[0], player: player.name};
+        }
+        }
+        else{
+          console.log("oooohhh");
+        this.game.operations.push({...maalooma,
+          options: this.getOptions(maalooma, player.name),
+          player: player.name, done: false});
+        }
+      }
+      this.game.currentPlayer = this.game.players[Math.floor(Math.random() * this.game.players.length)].name;
       this.game.state = GameStates.STARTED;
     }
+
+    if(data.type === 'setOmala') {
+      if (!this.game) return;
+      if (this.game.host.id !== data.id) return;
+      this.game.omalaCount = data.omalaCount;
+    }
+
+    if(data.type === 'ready') {
+      if (!this.game) return;
+      const player = this.game.players.find(player => player.id === data.id);
+      if (!player) return;
+      player.ready = true;
+    }
+
+    if(data.type === 'unready') {
+      if (!this.game) return;
+      const player = this.game.players.find(player => player.id === data.id);
+      if (!player) return;
+      player.ready = false;
+    }
+
+    if(data.type === 'endTurn') {
+      if (!this.game) return;
+      if (this.game.currentPlayer !== data.name) return;
+      this.game.operations = this.game.operations.map(op => {
+        if (op.player === data.name) {
+          op.done = true;
+        }
+        return op;
+      });
+      const remainingPlayers = this.game.operations.filter(op => !op.done).map(op => op.player);
+      if (remainingPlayers.length === 0) {
+        this.game.state = GameStates.ENDED;
+      }
+      else {
+        this.game.currentPlayer = remainingPlayers[Math.floor(Math.random() * remainingPlayers.length)] || "";
+      }
+    }
+
+
 
     
     console.log(this.game);
     this.party.broadcast(JSON.stringify(this.game));
   }
 
+
+  private getOptions(op: Operation, player: string) : string[] {
+    let option = undefined;
+    switch (op.name) {
+      case 'Sabooba':
+        option = op.options.splice(Math.floor(Math.random() * op.options.length), 1)[0];
+        console.log("option", option);
+        switch (option) {
+          case 'lw 7abast *':
+            return [`lw 7abast ${this.game?.players.filter(p => p.name !== player)[Math.floor(Math.random() * this.game?.players.length)].name}`];
+          case 'lw * keseb':
+            return [`lw ${this.game?.players.filter(p => p.name !== player)[Math.floor(Math.random() * this.game?.players.length)].name} keseb`];
+          case 'lw el 3omala kesbo':
+            return [option];
+          case 'lw et7abast':
+            return [option];
+          default:
+            console.log("default");
+            return [];
+        }
+        
+
+      case 'Maalooma':
+        option = op.options.splice(Math.floor(Math.random() * op.options.length), 1)[0];
+        switch (option) {
+          case '* 3ameel':
+            if (this.game?.omala.includes(player)) {
+              return [`${this.game?.zomala[Math.floor(Math.random() * this.game?.zomala.length)]} zemeel`];
+            }
+            return [`${this.game?.omala[Math.floor(Math.random() * this.game?.omala.length)]} 3ameel`];
+          case '* zemeel':
+            return [`${this.game?.zomala.filter(p => p !== player)[Math.floor(Math.random() * this.game?.zomala.length)]} zemeel`];
+          case '* zai *':
+            const za = Math.random() > 0.5 ? '3ameel' : 'zemeel';
+            if (za === '3ameel') {
+              const ameel1 = this.game?.omala[Math.floor(Math.random() * this.game?.omala.length)];
+              const filter = this.game?.omala.filter(p => p !== ameel1) || [];
+              return [`${ameel1} zai ${filter[Math.floor(Math.random() * filter.length)]}`];
+            }
+            const zemeel1 = this.game?.zomala[Math.floor(Math.random() * this.game?.zomala.length)];
+            const filter = this.game?.zomala.filter(p => p !== zemeel1) || [];
+            return [`${zemeel1} zai ${filter[Math.floor(Math.random() * filter.length)]}`];
+          case '* mesh zai *':
+            return [`${this.game?.omala.filter(p => p !== player)[Math.floor(Math.random() * this.game?.omala.length)]} mesh zai ${this.game?.zomala.filter(p => p !== player)[Math.floor(Math.random() * this.game?.zomala.length)]}`];
+          }
+
+
+      case 'Zmail':
+        const zam = Math.random() > 0.5 ? '3ameel' : 'zemeel';
+            if (zam === '3ameel') {
+              const ameel1 = this.game?.omala[Math.floor(Math.random() * this.game?.omala.length)];
+              const filter = this.game?.omala.filter(p => p !== ameel1) || [];
+              return [`${ameel1} zai ${filter[Math.floor(Math.random() * filter.length)]}`];
+            }
+            
+            const zemeel1 = this.game?.zomala[Math.floor(Math.random() * this.game?.zomala.length)];
+            console.log("zmeel",zemeel1, this.game?.zomala);
+            const filter = this.game?.zomala.filter(p => p !== zemeel1) || [];
+            return [`${zemeel1} zai ${filter[Math.floor(Math.random() * filter.length)]}`];
+            
+
+      case 'E3trf':
+        return ['*'];
+  }
+
+  return [];
+}
+
+  private checkSaboba(option: string) {
+    if (!this.game) return;
+    const split = option.split(' ');
+
+    if (split.includes('7abast')) {
+      return this.game.mahboos === split[2];
+    }
+
+    if (split.includes('keseb')) {
+      const player = split[1];
+      if (this.game.omala.includes(player)) {
+        return this.game.zomala.includes(this.game.mahboos);
+      }
+      return this.game.omala.includes(this.game.mahboos);
+    }
+
+    if (split.includes('kesbo')) {
+      return this.game.omala.includes(this.game.mahboos);
+    }
+
+    if (split.includes('et7abast')) {
+      return this.game.mahboos === this.game.sabooba?.player;
+    }
+  }
+
+  private checkWin() {
+    if (!this.game) return;
+    if(this.game.omala.includes(this.game.mahboos) && this.game.omala.includes((this.game.sabooba?.player || "")) && this.checkSaboba(this.game.sabooba?.option || "")) {
+      return `El zmail w ${this.game.sabooba?.player}`;
+    }
+
+    if(this.game.zomala.includes(this.game.mahboos) && this.game.zomala.includes((this.game.sabooba?.player || "")) && this.checkSaboba(this.game.sabooba?.option || "")) {
+      return `El omala w ${this.game.sabooba?.player}`;
+    }
+
+    if (this.game.omala.includes(this.game.mahboos)) {
+      return "El omala";
+    }
+
+    if (this.game.zomala.includes(this.game.mahboos)) {
+      return "El zomala";
+    }
+
+    return "El mahboos";
+  }
 
 }

@@ -7,7 +7,13 @@ export const createGame = async (host: string) => {
         players: [{name:host, id:""}],
         host: {name:host, id:""},
         code: code,
-        state: GameStates.LOBBY
+        state: GameStates.LOBBY,
+        omalaCount: 0,
+        operations: [],
+        omala: [],
+        zomala: [],
+        mahboos: "",
+        currentPlayer: ""
     }
     const req = await fetch(`${process.env.NEXT_PUBLIC_PARTY_URL}/party/${code}`, {
         method: 'POST',
