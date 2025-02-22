@@ -8,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 
 
 export const checkGame = (game: Game) => {
-  let ops = game.operations;
+  const ops = game.operations;
   for (let i = 0; i < ops.length; i++) {
     const split = ops[i].description.split(' ');
     if (split.includes('sabooba'))
