@@ -12,14 +12,15 @@ body {
 
 @layer base {
   :root {
-    --background: hsl(0 0% 100%);
-    --foreground: hsl(222.2 84% 4.9%);
-    --text: hsl(210 40% 96.1%);
+    --background: hsl(27, 100%, 93%);
+    --foreground: hsl(32, 87%, 84%);
+    --text: hsl(27, 95%, 14%);
     --card: hsl(0 0% 100%);
     --card-foreground: hsl(222.2 84% 4.9%);
     --popover: hsl(0 0% 100%);
     --popover-foreground: hsl(222.2 84% 4.9%);
-    --primary: hsl(222.2 47.4% 11.2%);
+    --primary: hsl(33, 59%, 65%);
+    --primary-hover: hsl(32, 83%, 72%);
     --primary-foreground: hsl(210 40% 98%);
     --secondary: hsl(210 40% 96.1%);
     --secondary-foreground: hsl(222.2 47.4% 11.2%);

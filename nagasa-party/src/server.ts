@@ -208,6 +208,11 @@ export default class Server implements Party.Server {
 
       const remainingPlayers = this.game.operations.filter(op => !op.done).map(op => op.player);
       if (remainingPlayers.length === 0) {
+        this.game.mahboos = "";
+        this.game.operations = [];
+        this.game.omala = [];
+        this.game.zomala = [];
+        this.game.sabooba = undefined;
         this.game.state = GameStates.LOBBY;
       }
       else {

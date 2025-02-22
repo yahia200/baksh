@@ -3,13 +3,12 @@ import React, { useState, useEffect } from 'react'
 import { Game, GameStates } from '@/types'
 import PartySocket from "partysocket";
 import { Button } from '@/components/ui/button'
-import { checkGame } from '@/lib/utils';
 
 function Operation({g, name, socket} : { g : Game, name : string, socket : PartySocket }) {
     const [game, setGame] = useState<Game>();
 
     useEffect(() => {
-        setGame(checkGame(g));
+        setGame(g);
     }, [g]);
 
     const render = () => {
@@ -56,7 +55,7 @@ function Operation({g, name, socket} : { g : Game, name : string, socket : Party
     <div>
         {render()}
       <div className='mx-auto w-fit mt-6'>
-        {(game?.currentPlayer.toString() !== game?.operations.find(op => op.name = "E3trf")?.player?.toString()) &&
+        {(game?.currentPlayer.toString() !== game?.operations.find(op => op.name === "E3trf")?.player?.toString()) &&
       <Button onClick={() => socket.send(JSON.stringify({type: 'endTurn', name}))}>End Turn</Button>
         }
       </div>

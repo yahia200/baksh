@@ -6,7 +6,6 @@ import { Game, GameStates } from '@/types'
 import Operation from './Operation';
 import Wait from './Wait';
 import { Button } from '@/components/ui/button';
-import { checkGame } from '@/lib/utils';
 
 
 function Container({code} : {code: string}) {
@@ -23,8 +22,7 @@ function Container({code} : {code: string}) {
         }
         const data = JSON.parse(msg.data) as Game;
         if (data) {
-          const game = checkGame(data);
-          setGame(game);
+          setGame(data);
         }
       },
     });
