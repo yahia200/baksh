@@ -10,6 +10,7 @@ import Results from './Results';
 import { Button } from '@/components/ui/button';
 import Ameel from '@/app/components/svg/Ameel';
 import Zemeel from '@/app/components/svg/Zemeel';
+import Wrapper from '@/app/Wrapper';
 
 
 function Container({code} : {code: string}) {
@@ -58,19 +59,19 @@ function Container({code} : {code: string}) {
 
     const render = () => {
         if (!game || game.state === GameStates.LOBBY)
-            return <Menu game={game} name={name || ""} endGame={handleEndGame} socket={socket} />
+            return <Wrapper><Menu game={game} name={name || ""} endGame={handleEndGame} socket={socket} /></Wrapper>
         else if (game.state === GameStates.INFO)
-            return <Info />
+            return <Wrapper><Info /></Wrapper>
         else if (game.state === GameStates.STARTED || game.state === GameStates.EATRAF){
           console.log("heeeeeeh",game);
-            return (<div>
+            return (<Wrapper>
               {game.currentPlayer === name ? <Operation g={game} name={name} socket={socket}/> : <Wait g={game}/>}
-            </div>)
+            </Wrapper>)
         }
         else if (game.state === GameStates.VOTING)
-            return <Voting g={game} name={name} socket={socket} />
+            return <Wrapper><Voting g={game} name={name} socket={socket} /></Wrapper>
         else if (game.state === GameStates.ENDED)
-            return <Results game={game} name={name} socket={socket} />
+            return <Wrapper><Results game={game} name={name} socket={socket} /></Wrapper>
           
     }
 
