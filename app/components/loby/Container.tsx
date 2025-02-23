@@ -5,7 +5,11 @@ import usePartySocket from 'partysocket/react'
 import { Game, GameStates } from '@/types'
 import Operation from './Operation';
 import Wait from './Wait';
+import Voting from './Voting';
+import Results from './Results';
 import { Button } from '@/components/ui/button';
+import Ameel from '@/app/components/svg/Ameel';
+import Zemeel from '@/app/components/svg/Zemeel';
 
 
 function Container({code} : {code: string}) {
@@ -44,8 +48,9 @@ function Container({code} : {code: string}) {
       const Info = () => {
         return (
           <div className='mx-auto w-fit text-center mt-6'>
-            <h1 className='w-fit mb-2'>Enta {game?.omala.includes(name) ? "3ameel" : "zemeel"}</h1>
-            <Button disabled={game?.players.find(p => p.name === name)?.ready} onClick={() => socket.send(JSON.stringify({type: 'ready', id: socket.id}))}>{ game?.players.find(p => p.name === name)?.ready ? "Estana" : "Eshta"}</Button>
+            <h1 className='w-fit mx-auto text-2xl mb-2'>Enta {game?.omala.includes(name) ? "3ameel" : "zemeel"}</h1>
+            {game?.omala.includes(name) ? <Ameel /> : <Zemeel />}
+            <Button disabled={game?.players.find(p => p.name === name)?.ready} onClick={() => socket.send(JSON.stringify({type: 'ready', name}))}>{ game?.players.find(p => p.name === name)?.ready ? "Estana" : "Eshta"}</Button>
           </div>
         )
       }
@@ -62,6 +67,10 @@ function Container({code} : {code: string}) {
               {game.currentPlayer === name ? <Operation g={game} name={name} socket={socket}/> : <Wait g={game}/>}
             </div>)
         }
+        else if (game.state === GameStates.VOTING)
+            return <Voting g={game} name={name} socket={socket} />
+        else if (game.state === GameStates.ENDED)
+            return <Results game={game} name={name} socket={socket} />
           
     }
 

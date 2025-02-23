@@ -13,7 +13,9 @@ export const createGame = async (host: string) => {
         omala: [],
         zomala: [],
         mahboos: "",
-        currentPlayer: ""
+        currentPlayer: "",
+        votes: [],
+        remainingTime: 0
     }
     const req = await fetch(`${process.env.NEXT_PUBLIC_PARTY_URL}/party/${code}`, {
         method: 'POST',

@@ -9,11 +9,11 @@ function Menu({ game, name, socket, endGame }: { game?: Game, name?: string, end
 
 
   const toggleReady = () => {
-    const player = game?.players.find(player => player.id === socket.id);
+    const player = game?.players.find(player => player.name === name);
     if (!player) return;
     player.ready = !player.ready;
-    if (player.ready) socket.send(JSON.stringify({type: 'ready', id: socket.id}))
-    else socket.send(JSON.stringify({type: 'unready', id: socket.id}))
+    if (player.ready) socket.send(JSON.stringify({type: 'ready', name}))
+    else socket.send(JSON.stringify({type: 'unready', name}))
   }
 
 
@@ -22,8 +22,8 @@ function Menu({ game, name, socket, endGame }: { game?: Game, name?: string, end
       <div className='w-11/12 mx-auto my-4 bg-foreground p-4 rounded-lg'>
           <h2 className='text-2xl w-fit mx-auto'>Players</h2>
           <ul className='w-fit mx-auto my-4 grid lg:grid-cols-6 xs:grid-cols-3 gap-2'>
-            {game?.players.map((player : {name:string, id:string}) => (
-              <li key={player.id} className='text-md font-normal bg-background px-4 py-2 w-fit rounded-lg'>
+            {game?.players.map((player : {name:string, id:string, ready?: boolean}) => (
+              <li key={player.id} className={`text-md font-normal px-4 py-2 w-fit rounded-lg ${game?.host.name === player.name ?  "bg-primary-hover" : `${ player.ready ? 'bg-primary' : 'bg-background'}`}`}>
                 <span>{player.name}</span>
               </li>
             ))}
@@ -51,7 +51,7 @@ function Menu({ game, name, socket, endGame }: { game?: Game, name?: string, end
       onClick={() => socket.send(JSON.stringify({type: 'start', id: socket.id}))}
       disabled={game?.players.filter(p=>p.name !== name).some(player => !player.ready) || (game?.players.length || 0) < 3 || (game?.omalaCount || 0) < 1}
       >
-        {game?.players.filter(p=>p.name !== name).some(player => !player.ready) ? 'El la3eba mesh gahza' : "ebda2"}
+        {game?.players.filter(p=>p.name !== name).some(player => !player.ready) ? 'El la3eba mesh gahza' : `${(game?.omalaCount || 0) > 0 ? "ebda2" : "e5tar 3adad el omala"}`}
       </Button>
         <Button className='w-11/12' onClick={endGame}>
           End Game
@@ -59,7 +59,7 @@ function Menu({ game, name, socket, endGame }: { game?: Game, name?: string, end
           </>
       ) :
       <Button className='w-11/12' onClick={toggleReady}>
-        {game?.players.find(player => player.id === socket.id)?.ready ? 'Unready' : 'Ready'}
+        {game?.players.find(player => player.name === name)?.ready ? 'Unready' : 'Ready'}
       </Button>
     }
       <Button className='w-11/12' onClick={() => {

@@ -9,7 +9,10 @@ export type Game = {
     omala: string[];
     zomala: string[];
     mahboos: string;
+    votes: {voter: string, voted: string}[];
     currentPlayer: string;
+    remainingTime: number;
+    winners?: string;
     };
 
 
@@ -21,6 +24,7 @@ export enum Codes {
 export enum GameStates {
     LOBBY = 'LOBBY',
     STARTED = 'STARTED',
+    VOTING = 'VOTING',
     ENDED = 'ENDED',
     EATRAF = 'EATRAF',
     INFO = 'INFO'
