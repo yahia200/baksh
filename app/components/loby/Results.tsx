@@ -4,9 +4,11 @@ import PartySocket from "partysocket";
 import Ameel from '../svg/Ameel';
 import Zemeel from '../svg/Zemeel';
 import { Button } from '@/components/ui/button';
+import Wrapper from '@/app/Wrapper';
 
 function Results({game, name, socket} : {game: Game, name: string, socket: PartySocket}) {
   return (
+    <Wrapper>
     <div className='mx-auto text-center space-y-2 mt-6'>
         <h1>Results</h1>
         <p>el wa2t el ba2y: {game.remainingTime}</p>
@@ -28,6 +30,7 @@ function Results({game, name, socket} : {game: Game, name: string, socket: Party
         </div>
 }
     </div>
+    </Wrapper>
   )
 }
 

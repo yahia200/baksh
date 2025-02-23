@@ -11,6 +11,20 @@ import { Button } from '@/components/ui/button';
 import Ameel from '@/app/components/svg/Ameel';
 import Zemeel from '@/app/components/svg/Zemeel';
 import Wrapper from '@/app/Wrapper';
+import PartySocket from 'partysocket';
+
+
+const Info = ({game, name, socket} : {game: Game, name: string, socket: PartySocket}) => {
+  return (
+    <Wrapper>
+    <div className='mx-auto w-fit text-center mt-6'>
+      <h1 className='w-fit mx-auto text-2xl mb-2'>Enta {game?.omala.includes(name) ? "3ameel" : "zemeel"}</h1>
+      {game?.omala.includes(name) ? <Ameel /> : <Zemeel />}
+      <Button disabled={game?.players.find(p => p.name === name)?.ready} onClick={() => socket.send(JSON.stringify({type: 'ready', name}))}>{ game?.players.find(p => p.name === name)?.ready ? "Estana" : "Eshta"}</Button>
+    </div>
+    </Wrapper>
+  )
+}
 
 
 function Container({code} : {code: string}) {
@@ -46,32 +60,22 @@ function Container({code} : {code: string}) {
         socket.send(JSON.stringify({type: 'delete', id: socket.id}));  
       };
 
-      const Info = () => {
-        return (
-          <div className='mx-auto w-fit text-center mt-6'>
-            <h1 className='w-fit mx-auto text-2xl mb-2'>Enta {game?.omala.includes(name) ? "3ameel" : "zemeel"}</h1>
-            {game?.omala.includes(name) ? <Ameel /> : <Zemeel />}
-            <Button disabled={game?.players.find(p => p.name === name)?.ready} onClick={() => socket.send(JSON.stringify({type: 'ready', name}))}>{ game?.players.find(p => p.name === name)?.ready ? "Estana" : "Eshta"}</Button>
-          </div>
-        )
-      }
-
 
     const render = () => {
         if (!game || game.state === GameStates.LOBBY)
             return <Wrapper><Menu game={game} name={name || ""} endGame={handleEndGame} socket={socket} /></Wrapper>
         else if (game.state === GameStates.INFO)
-            return <Wrapper><Info /></Wrapper>
+            return <Info game={game} name={name} socket={socket}/>
         else if (game.state === GameStates.STARTED || game.state === GameStates.EATRAF){
           console.log("heeeeeeh",game);
-            return (<Wrapper>
+            return (<>
               {game.currentPlayer === name ? <Operation g={game} name={name} socket={socket}/> : <Wait g={game}/>}
-            </Wrapper>)
+            </>)
         }
         else if (game.state === GameStates.VOTING)
-            return <Wrapper><Voting g={game} name={name} socket={socket} /></Wrapper>
+            return <Voting g={game} name={name} socket={socket} />
         else if (game.state === GameStates.ENDED)
-            return <Wrapper><Results game={game} name={name} socket={socket} /></Wrapper>
+            return <Results game={game} name={name} socket={socket} />
           
     }
 
@@ -85,5 +89,6 @@ function Container({code} : {code: string}) {
     </div>
   )
 }
+
 
 export default Container

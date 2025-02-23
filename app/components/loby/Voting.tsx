@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { Game } from '@/types/index'
 import { Button } from '@/components/ui/button'
 import PartySocket from "partysocket";
+import Wrapper from '@/app/Wrapper';
 
 
 function Voting({g, name, socket} : {g: Game, name: string, socket: PartySocket}) {
@@ -14,6 +15,7 @@ function Voting({g, name, socket} : {g: Game, name: string, socket: PartySocket}
     }, [g]);
 
   return (
+    <Wrapper>
     <div className='mx-auto text-center space-y-1 mt-6'>
         <h1 className='text-2xl font-bold text-center'>Voting</h1>
         <p className='font-normal text-lg text-center'>lazem t5tar te7bs meen abl ma el wa2t ye5las</p>
@@ -45,6 +47,7 @@ function Voting({g, name, socket} : {g: Game, name: string, socket: PartySocket}
 
 }
         </div>
+        </Wrapper>
   )
 }
 
